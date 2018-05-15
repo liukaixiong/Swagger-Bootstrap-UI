@@ -939,7 +939,7 @@
         if (typeof (apiInfo.parameters) != 'undefined' && apiInfo.parameters != null) {
             var ptd = $("<td></td>");
             var ptable = $('<table class="table table-bordered" id="requestModelTable"></table>')
-            var phead = $('<thead><th>参数名称</th><th>说明</th><th>类型</th><th>in</th><th>允许的值</th><th>是否必须</th></thead>');
+            var phead = $('<thead><th>参数名称</th><th>说明</th><th>类型</th><th>in</th><th>参考值</th><th>是否必须</th></thead>');
             ptable.append(phead);
             var pbody = $('<tbody></tbody>');
             var requestArrs = new Array();
@@ -976,7 +976,7 @@
                     description: DApiUI.getStringValue(param['description']),
                     type: ptype,
                     in: DApiUI.getStringValue(param['in']),
-                    allowableValues:DApiUI.toString(param['enum'], ""),
+                    example:DApiUI.toString(param['example'], ""),
                     required: param['required'],
                     pid: ""
                 };
@@ -1037,7 +1037,7 @@
                                     type: type,
                                     in: DApiUI.getStringValue(param['in']),
                                     // required: param['required'],
-                                    allowableValues:DApiUI.toString(pvalue.enum, ""),
+                                    example:DApiUI.toString(pvalue.example, ""),
                                     required: isRequire == true ? "是" : "否",
                                     pid: pobject.id
                                 };
@@ -1057,7 +1057,7 @@
                         treeClassPId = "treegrid-parent-" + arrInfo.pid;
                     }
                     var tr = $("<tr class='" + treeClassId + " " + treeClassPId + "'></tr>");
-                    tr.append("<td>" + arrInfo.field + "</td><td>" + arrInfo.description + "</td><td>" + arrInfo.type + "</td><td>" + arrInfo.in + "</td><td>" + arrInfo.allowableValues + "</td><td>" + arrInfo.required + "</td>");
+                    tr.append("<td>" + arrInfo.field + "</td><td>" + arrInfo.description + "</td><td>" + arrInfo.type + "</td><td>" + arrInfo.in + "</td><td>" + arrInfo.example + "</td><td>" + arrInfo.required + "</td>");
                     pbody.append(tr);
                 }
             } else {
