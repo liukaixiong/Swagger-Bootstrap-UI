@@ -8,6 +8,16 @@
 
     DApiUI.init = function () {
         DApiUI.createGroupTab();
+        // initTestProcess();
+    }
+
+    /**
+     * 测试本地文件获取数据
+     */
+    function initTestProcess() {
+        $.getJSON('./api.json', function (data) {
+            DApiUI.testMenu(data);
+        });
     }
 
     /**
@@ -27,7 +37,6 @@
         })
 
     }
-
 
     /***
      * 创建面板
@@ -176,7 +185,6 @@
             type: "get",
             async: false,
             success: function (data) {
-                //var menu=JSON.parse(data)
                 var menu = data;
                 DApiUI.definitions(menu);
                 DApiUI.log(menu);
@@ -184,6 +192,18 @@
                 DApiUI.createDetailMenu(menu);
             }
         })
+    }
+
+    /**
+     * 模拟数据已经拿到的方法
+     * @param data
+     */
+    DApiUI.testMenu = function (menu) {
+        // var menu = JSON.parse(data);
+        DApiUI.definitions(menu);
+        DApiUI.log(menu);
+        DApiUI.createDescription(menu);
+        DApiUI.createDetailMenu(menu);
     }
 
     /***
@@ -352,6 +372,14 @@
             str = obj.toString();
         }
         return str;
+    }
+
+    DApiUI.splitDataFirst = function (obj, splitSymol, index) {
+        if (obj != undefined && obj != "" && obj.indexOf(splitSymol) > -1) {
+            var data = obj.split(splitSymol)[index];
+            return data;
+        }
+        return obj;
     }
 
 
@@ -908,7 +936,7 @@
         var url = $('<tr><th class="active" style="text-align: right;">接口url</th><td style="text-align: left"><code>' + projectPath + '</code></td></tr>');
         tbody.append(url);
 
-        var author = $('<tr><th class="active" style="text-align: right;">作者</th><td style="text-align: left"><code>' + DApiUI.getStringValue(apiInfo.operationId) + '</code></td></tr>');
+        var author = $('<tr><th class="active" style="text-align: right;">作者</th><td style="text-align: left"><code>' + DApiUI.splitDataFirst(apiInfo.operationId, "_", 0) + '</code></td></tr>');
         tbody.append(author);
 
         var summary = $('<tr><th class="active" style="text-align: right;">接口名称</th><td style="text-align: left">' + DApiUI.getStringValue(apiInfo.summary) + '</td></tr>');
@@ -976,37 +1004,11 @@
                     description: DApiUI.getStringValue(param['description']),
                     type: ptype,
                     in: DApiUI.getStringValue(param['in']),
-                    example:DApiUI.toString(param['example'], ""),
+                    example: DApiUI.toString(param['example'], ""),
                     required: param['required'],
                     pid: ""
                 };
                 requestArrs.push(pobject);
-                /*if (refflag){
-                    ptr=$('<tr><td>'+param.name+'</td><td style="text-align: center;">'+DApiUI.getStringValue(param['description'])+'</td><td>'+ptype+'</td><td>'+DApiUI.getStringValue(param['in'])+'</td><td>'+param['required']+'</td></tr>');
-                    pbody.append(ptr);
-                    var definitionsArray=DApiUI.getDoc().data("definitionsArray");
-                    var mcs=DApiUI.getMenuConstructs();
-                    for(var k in mcs.definitions){
-                        if(ptype==k){
-                            var tp=mcs.definitions[ptype];
-                            var props=tp["properties"];
-                            for(var prop in props){
-                                var pvalue=props[prop];
-                                var tr=$("<tr></tr>")
-                                tr.append($("<td style='text-align: right;'>"+prop+"</td>"))
-                                tr.append($("<td>"+DApiUI.toString(pvalue.description,"")+"</td>"));
-                                var type=DApiUI.toString(pvalue.type,"string");
-                                tr.append($("<td>"+type+"</td>"));
-                                tr.append($("<td>"+DApiUI.getStringValue(param['in'])+"</td>"));
-                                tr.append($("<td>"+param['required']+"</td>"));
-                                pbody.append(tr);
-                            }
-                        }
-                    }
-                }else{
-                    ptr=$('<tr><td>'+param.name+'</td><td style="text-align: center;">'+DApiUI.getStringValue(param['description'])+'</td><td>'+ptype+'</td><td>'+DApiUI.getStringValue(param['in'])+'</td><td>'+param['required']+'</td></tr>');
-                    pbody.append(ptr);
-                }*/
                 if (refflag) {
                     var mcs = DApiUI.getMenuConstructs();
                     for (var k in mcs.definitions) {
@@ -1016,38 +1018,39 @@
 
 
                             for (var prop in props) {
-                                var pvalue = props[prop];
-                                var type = DApiUI.toString(pvalue.type, "string");
-
-                                // todo udpate hidden
-                                // 如果包含该链接表示需要隐藏掉
-                                if (DApiUI.isListContain(pvalue.hiddenList, apiObject.url)) {
-                                    continue;
-                                }
-
-                                var isRequire = ($.inArray(prop, tp["required"]) > -1);
-                                if (isRequire || DApiUI.isListContain(pvalue.requireList, apiObject.url)) {
-                                    isRequire = true;
-                                }
-
-                                var cobj = {
-                                    id: generUUID(),
-                                    field: prop,
-                                    description: DApiUI.toString(pvalue.description, ""),
-                                    type: type,
-                                    in: DApiUI.getStringValue(param['in']),
-                                    // required: param['required'],
-                                    example:DApiUI.toString(pvalue.example, ""),
-                                    required: isRequire == true ? "是" : "否",
-                                    pid: pobject.id
-                                };
-
-                                requestArrs.push(cobj);
+                                deepRequestTree("", prop, props, tp, mcs.definitions, requestArrs, apiObject.url);
+                                // var pvalue = props[prop];
+                                // var type = DApiUI.toString(pvalue.type, "string");
+                                //
+                                // // todo udpate hidden
+                                // // 如果包含该链接表示需要隐藏掉
+                                // if (DApiUI.isListContain(pvalue.hiddenList, apiObject.url)) {
+                                //     continue;
+                                // }
+                                //
+                                // var isRequire = ($.inArray(prop, tp["required"]) > -1);
+                                // if (isRequire || DApiUI.isListContain(pvalue.requireList, apiObject.url)) {
+                                //     isRequire = true;
+                                // }
+                                //
+                                // var cobj = {
+                                //     id: generUUID(),
+                                //     field: prop,
+                                //     description: DApiUI.toString(pvalue.description, ""),
+                                //     type: type,
+                                //     in: DApiUI.getStringValue(param['in']),
+                                //     // required: param['required'],
+                                //     example: DApiUI.toString(pvalue.example, ""),
+                                //     required: isRequire == true ? "是" : "否",
+                                //     pid: pobject.id
+                                // };
+                                //
+                                // requestArrs.push(cobj);
                             }
                         }
                     }
                 }
-            })
+            });
             if (requestArrs.length > 0) {
                 for (var i = 0; i < requestArrs.length; i++) {
                     var arrInfo = requestArrs[i];
@@ -1075,7 +1078,7 @@
         var responseConstructtd = $('<td  style="text-align: left"></td>')
         responseConstructtd.append(DApiUI.createResponseDefinition(apiInfo));
         responseConstruct.append(responseConstructtd);
-        tbody.append(responseConstruct)
+        tbody.append(responseConstruct);
 
         //响应参数 add by xiaoymin 2017-8-20 16:17:18
         var respParams = $('<tr><th class="active" style="text-align: right;">响应参数说明</th></tr>');
@@ -1226,48 +1229,10 @@
                                 tbody.append("<tr><td colspan='3'>暂无</td></tr>")
                             }
 
-                            /*for(var prop in props){
-                                deepTree("",prop,props,mcs.definitions,arrInfos);
-                                var pvalue=props[prop];
-                                var tr=$("<tr></tr>")
-                                //只遍历一级属性
-                                //判断是否是ref
-                                if(pvalue.hasOwnProperty("$ref")){
-                                    var param_ref = pvalue["$ref"];
-                                    var regex1 = new RegExp("#/definitions/(.*)$", "ig");
-                                    if(regex1.test((param_ref))){
-                                        var ptype=RegExp.$1;
-                                        tr.append($("<td>"+prop+"</td>"))
-                                        tr.append($("<td>"+ptype+"</td>"))
-                                        tr.append($("<td></td>"))
-                                        tbody.append(tr);
-                                        for(var j in mcs.definitions) {
-                                            if (ptype == j) {
-                                                var tpp=mcs.definitions[ptype];
-                                                var pp_props=tpp["properties"];
-                                                for(var prop1 in pp_props) {
-                                                    var tr1=$("<tr></tr>")
-                                                    var pvalue1 = pp_props[prop1];
-                                                    tr1.append($("<td style='text-align: right;'>" + prop1 + "</td>"));
-                                                    tr1.append($("<td>"+DApiUI.getValue(pvalue1,"type","string",true)+"</td>"));
-                                                    tr1.append($("<td>"+DApiUI.getValue(pvalue1,"description","",true)+"</td>"));
-                                                    tbody.append(tr1);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    tr.append($("<td>"+prop+"</td>"))
-                                    var type=DApiUI.toString(pvalue.type,"string");
-                                    tr.append($("<td>"+type+"</td>"));
-                                    tr.append($("<td>"+DApiUI.toString(pvalue.description,"")+"</td>"));
-                                    tbody.append(tr);
-                                }
-                            }*/
-                            DApiUI.log("deepTree")
-                            DApiUI.log(arrInfos)
+                            DApiUI.log("deepTree");
+                            DApiUI.log(arrInfos);
                             table.append(tbody);
-                            div.append(table)
+                            div.append(table);
                             setTimeout(function () {
                                 DApiUI.log("执行treegrid方法...")
                                 table.treegrid({
@@ -1281,6 +1246,120 @@
             }
         }
         return div;
+    }
+
+    /**
+     * 递归请求参数
+     * @param pid               请求编号
+     * @param prop              属性名称
+     * @param props             属性实体
+     * @param tp                关于这个属性的对象
+     * @param definitions       所有属性对象
+     * @param arrs              数据承装数组
+     * @param url               路径
+     */
+    function deepRequestTree(pid, prop, props, tp, definitions, arrs, url) {
+        var regex1 = new RegExp("#/definitions/(.*)$", "ig");
+        var pvalue = props[prop];
+
+        if (pvalue.hasOwnProperty("$ref")) {
+            DApiUI.log("deepTree--ref---" + prop)
+            var param_ref = pvalue["$ref"];
+            var require = isRequire(prop, props, tp, url);
+            if (regex1.test((param_ref))) {
+                var ptype = RegExp.$1;
+                var arrObj = {
+                    id: generUUID(),
+                    field: prop,
+                    type: ptype,
+                    in: DApiUI.getStringValue(ptype['in']),
+                    description: DApiUI.toString(pvalue.description, ""),
+                    example: DApiUI.toString(pvalue.example, ""),
+                    required: require == true ? "是" : "否",
+                    pid: pid
+                };
+                arrs.push(arrObj);
+                for (var j in definitions) {
+                    if (ptype == j) {
+                        var tpp = definitions[ptype];
+                        var pp_props = tpp["properties"];
+                        for (var prop1 in pp_props) {
+                            if (prop1 != prop) {
+                                deepRequestTree(arrObj.id, prop1, pp_props, tp, definitions, arrs, url);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            DApiUI.log("deepTree--single---" + prop)
+            //属性名称prop
+            var id = generUUID();
+            var type = DApiUI.toString(pvalue.type, "string");
+            var description = DApiUI.toString(pvalue.description, "");
+
+            //是否必填
+            var require = isRequire(prop, props, tp, url);
+
+            var obj = {
+                id: id,
+                type: type,
+                field: prop,
+                description: description,
+                pid: pid,
+                in: "body",
+                example: DApiUI.toString(pvalue.example, ""),
+                required: require == true ? "是" : "否",
+            };
+            arrs.push(obj);
+            //判断是否是数组
+            if (type == "array") {
+                DApiUI.log("array...")
+                var items = pvalue["items"];
+                DApiUI.log(pvalue);
+                DApiUI.log(items);
+                DApiUI.log(pvalue.items);
+                if (items.hasOwnProperty("$ref")) {
+                    var item_ref = items["$ref"];
+                    DApiUI.log(item_ref);
+                    if (regex1.test((item_ref))) {
+                        var ptype = RegExp.$1;
+                        DApiUI.log(ptype);
+                        //获取到对象类名
+                        for (var j in definitions) {
+                            if (ptype == j) {
+                                var tpp = definitions[ptype];
+                                var pp_props = tpp["properties"];
+                                for (var prop1 in pp_props) {
+                                    if (prop1 != prop) {
+                                        deepRequestTree(obj.id, prop1, pp_props, tpp, definitions, arrs, url);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * 查看当前参数是否必填
+     * @param prop          属性名称
+     * @param propObject    属性对象
+     * @param tp            描述对象
+     * @param url           当前对应接口的路径
+     * @returns {boolean}
+     */
+    function isRequire(prop, propObject, tp, url) {
+        var isRequire = false;
+        var pvalue = propObject[prop];
+        isRequire = ($.inArray(prop, tp["required"]) > -1);
+        if (isRequire || DApiUI.isListContain(pvalue.requireList, url)) {
+            isRequire = true;
+        }
+        return isRequire;
     }
 
 
