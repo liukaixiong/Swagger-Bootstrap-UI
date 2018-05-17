@@ -1,0 +1,58 @@
+{
+  "SwaggerAnnotation": [
+    {
+      "name": "接口URL",
+      "value":"@RequestMapping()[类路径]  + @RequestMapping[方法路径]"
+    },
+    {
+      "name": "作者",
+      "value":"@ApiOperation(nikename = ?) [方法级别]"
+    },
+    {
+      "name": "接口名称",
+      "value":"@ApiOperation(value = ?) [方法级别]"
+    },
+    {
+      "name": "说明",
+      "value":"@ApiOperation(notes = ?) [方法级别]"
+    },
+    {
+      "name": "请求方式",
+      "value":"@RequestMapping[方法路径](method = ?) [方法级别]"
+    },
+    {
+      "name":"consumes",
+      "value":"@RequestMapping[方法路径](consumes = ?) [方法级别]"
+    },
+    {
+      "name":"produces",
+      "value":"@RequestMapping[方法路径](produces,c = ?) [方法级别]"
+    },
+    {
+      "name":"请求参数【JSON】",
+      "value":"@RequestBody 修饰就行了,但是里面的实体需要自己定义 [参数修饰级别]",
+      "array":[
+        {
+          "name":"实体定义方式",
+          "value":"@ApiModel(description = ?) 不加的话@ApiModelProperty不会起作用 [类级别]",
+          "array":[
+            {
+              "name":"实体中的属性",
+              "value":"@ApiModelProperty(name = '属性字段名称', value = '属性的描述', example = '案例值',required = 是否必填) [属性级别]"
+            }
+          ]
+        }
+      ]
+    },{
+      "name":"表单请求参数",
+      "value":"方法上面加 @ApiImplicitParam(name = 属性名称, value = 属性描述, required = 是否必填, example = 案例值, paramType = 属性类型) [方法级别]",
+      "array":[
+        {
+          "name":"修饰对象",
+          "value":"对应SpringMVC的注解 - @RequestParam [属性级别]"
+        }
+      ]
+    }
+  ],
+  "head":"swagger 注解对应"
+}

@@ -7,8 +7,8 @@
     var DApiUI = {};
 
     DApiUI.init = function () {
-        DApiUI.createGroupTab();
-        // initTestProcess();
+        // DApiUI.createGroupTab();
+        initTestProcess();
     }
 
     /**
@@ -20,7 +20,7 @@
         });
     }
 
-    /**
+    /*
      * 创建分组
      */
     DApiUI.createGroupTab = function () {
@@ -122,6 +122,47 @@
         DApiUI.getDoc().html("");
         DApiUI.getDoc().append(div);
         DApiUI.getDoc().data("data", menu);
+        DApiUI.createSwaggerRemarkTable();
+    }
+
+    DApiUI.createSwaggerRemarkTable = function () {
+
+        $.getJSON('./swagger.json', function (data) {
+            var table = $('<table class="table table-hover table-bordered table-text-center" id="swaggerTable"></table>');
+            table.append($('<thead><tr><th colspan="2" style="text-align:center">' + data.head + '</th></tr></thead>'));
+            var tbody = $('<tbody></tbody>');
+            var swaggerAnnotation = data.SwaggerAnnotation;
+            // 递归数据
+            DApiUI.deepSwaggerRemarkTable("", swaggerAnnotation, tbody);
+
+            table.append(tbody);
+            var div = $('<div  style="width:99%;margin:0px auto;"></div>')
+            div.append(table);
+            DApiUI.getDoc().append(div);
+            setTimeout(function() {
+                //请求参数调用treegruid方法
+                $("#swaggerTable").treegrid({
+                    expanderExpandedClass: 'glyphicon glyphicon-minus',
+                    expanderCollapsedClass: 'glyphicon glyphicon-plus'
+                });
+            }, 100);
+        });
+    }
+
+    DApiUI.deepSwaggerRemarkTable = function (pid, json, tbody) {
+        $.each(json, function (i, json) {
+            var id = generUUID();
+            var treeClassId = "treegrid-" + id;
+            var treeClassPId = "";
+            if (pid != "") {
+                treeClassPId = "treegrid-parent-" + pid;
+            }
+            tbody.append($('<tr class="' + treeClassId + " "+treeClassPId + '"><td class="active">' + json.name + '</td><td style="text-align: left">' + json.value + '</td></tr>'));
+
+            if (json.array != undefined) {
+                DApiUI.deepSwaggerRemarkTable(id, json.array, tbody);
+            }
+        });
     }
 
     /***
@@ -996,8 +1037,7 @@
                         }
                     }
                 }
-                var ptr = null;
-                //列出属性
+                // 列出属性
                 var pobject = {
                     id: generUUID(),
                     field: param.name,
@@ -1018,7 +1058,7 @@
 
 
                             for (var prop in props) {
-                                deepRequestTree("", prop, props, tp, mcs.definitions, requestArrs, apiObject.url);
+                                deepRequestTree(pobject.id, prop, props, tp, mcs.definitions, requestArrs, apiObject.url);
                                 // var pvalue = props[prop];
                                 // var type = DApiUI.toString(pvalue.type, "string");
                                 //
@@ -1116,20 +1156,6 @@
                 pbody.append(tr);
 
             }
-            /*if(resp.hasOwnProperty("200")){
-                var ptr=$('<tr><td>200</td><td>http响应成功</td><td></td></tr>');
-                pbody.append(ptr);
-            }
-            //400
-            pbody.append($('<tr><td>400</td><td>Bad Request 请求出现语法错误,一般是请求参数不对</td><td></td></tr>'));
-            //404
-            pbody.append($('<tr><td>404</td><td>Not Found 无法找到指定位置的资源</td><td></td></tr>'));
-            //401
-            pbody.append($('<tr><td>401</td><td>Unauthorized 访问被拒绝</td><td></td></tr>'));
-            //403
-            pbody.append($('<tr><td>403</td><td>Forbidden 资源不可用</td><td></td></tr>'));
-            //500
-            pbody.append($('<tr><td>500</td><td>服务器内部错误,请联系Java后台开发人员!!!</td><td></td></tr>'));*/
             ptable.append(pbody);
             ptd.append(ptable);
             response.append(ptd);
@@ -1261,6 +1287,10 @@
     function deepRequestTree(pid, prop, props, tp, definitions, arrs, url) {
         var regex1 = new RegExp("#/definitions/(.*)$", "ig");
         var pvalue = props[prop];
+
+        if (DApiUI.isListContain(pvalue, url)) {
+            return;
+        }
 
         if (pvalue.hasOwnProperty("$ref")) {
             DApiUI.log("deepTree--ref---" + prop)
