@@ -7,8 +7,8 @@
     var DApiUI = {};
 
     DApiUI.init = function () {
-        // DApiUI.createGroupTab();
-        initTestProcess();
+        DApiUI.createGroupTab();
+        // initTestProcess();
     }
 
     /**
