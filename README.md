@@ -6,15 +6,23 @@ swagger-bootstrap-ui
 
 ## 简介
 
-基于swagger-bootstrap-ui做了一些拓展，原地址是在 [swagger-bootstrap-ui](https://github.com/xiaoymin/Swagger-Bootstrap-UI) 访问,一些特性功能可以在原地址上进行参考.本项目没有打包到mavne私服中,**需要自己本地编译。**
+基于swagger-bootstrap-ui做了一些优化拓展，原地址是在 [swagger-bootstrap-ui](https://github.com/xiaoymin/Swagger-Bootstrap-UI) 访问,一些特性功能可以在原地址上进行参考.本项目没有打包到mavne私服中,**需要自己本地编译。**
 
 
 
 ## 功能展示
 
+注解使用
+
+![注解配置图](https://upload-images.jianshu.io/upload_images/6370985-c2d0f052a21103dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 1. 入参
 
 ![image.png](https://upload-images.jianshu.io/upload_images/6370985-1af4bf76367a250e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+ 1.1 多层级的入参
+
+![多层级的入参](https://upload-images.jianshu.io/upload_images/6370985-f7f8f7c333b80dd8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 2. 出参
 
@@ -22,7 +30,13 @@ swagger-bootstrap-ui
 
 ![image.png](https://upload-images.jianshu.io/upload_images/6370985-c680b00df205f955.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-3. 调试
+​	多层级出参 : 
+
+![多层级出参](https://upload-images.jianshu.io/upload_images/6370985-7a34c137e70c315f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+
+1. 调试
 
    ![image.png](https://upload-images.jianshu.io/upload_images/6370985-0018c09ab2ac2180.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 

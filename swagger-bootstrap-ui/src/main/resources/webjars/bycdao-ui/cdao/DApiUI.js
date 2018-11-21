@@ -139,7 +139,7 @@
             var div = $('<div  style="width:99%;margin:0px auto;"></div>')
             div.append(table);
             DApiUI.getDoc().append(div);
-            setTimeout(function() {
+            setTimeout(function () {
                 //请求参数调用treegruid方法
                 $("#swaggerTable").treegrid({
                     expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -157,7 +157,7 @@
             if (pid != "") {
                 treeClassPId = "treegrid-parent-" + pid;
             }
-            tbody.append($('<tr class="' + treeClassId + " "+treeClassPId + '"><td class="active">' + json.name + '</td><td style="text-align: left">' + json.value + '</td></tr>'));
+            tbody.append($('<tr class="' + treeClassId + " " + treeClassPId + '"><td class="active">' + json.name + '</td><td style="text-align: left">' + json.value + '</td></tr>'));
 
             if (json.array != undefined) {
                 DApiUI.deepSwaggerRemarkTable(id, json.array, tbody);
@@ -1392,6 +1392,22 @@
         return isRequire;
     }
 
+    var storeArray = {};
+
+    function extracted(definitions, ptype, prop, arrObj, arrs) {
+        for (var j in definitions) {
+            if (ptype == j) {
+                var tpp = definitions[ptype];
+                var pp_props = tpp["properties"];
+                for (var prop1 in pp_props) {
+                    if (prop1 != prop && storeArray[prop1] == null) {
+                        storeArray[prop1] = prop1;
+                        deepTree(arrObj.id, prop1, pp_props, definitions, arrs);
+                    }
+                }
+            }
+        }
+    }
 
     function deepTree(pid, prop, props, definitions, arrs) {
         var regex1 = new RegExp("#/definitions/(.*)$", "ig");
@@ -1403,17 +1419,7 @@
                 var ptype = RegExp.$1;
                 var arrObj = {id: generUUID(), field: prop, type: ptype, description: "", pid: pid};
                 arrs.push(arrObj);
-                for (var j in definitions) {
-                    if (ptype == j) {
-                        var tpp = definitions[ptype];
-                        var pp_props = tpp["properties"];
-                        for (var prop1 in pp_props) {
-                            if (prop1 != prop) {
-                                deepTree(arrObj.id, prop1, pp_props, definitions, arrs);
-                            }
-                        }
-                    }
-                }
+                extracted(definitions, ptype, prop, arrObj, arrs);
             }
         } else {
             DApiUI.log("deepTree--single---" + prop)
@@ -1436,18 +1442,19 @@
                     if (regex1.test((item_ref))) {
                         var ptype = RegExp.$1;
                         DApiUI.log(ptype);
-                        //获取到对象类名
-                        for (var j in definitions) {
-                            if (ptype == j) {
-                                var tpp = definitions[ptype];
-                                var pp_props = tpp["properties"];
-                                for (var prop1 in pp_props) {
-                                    if (prop1 != prop) {
-                                        deepTree(obj.id, prop1, pp_props, definitions, arrs);
-                                    }
-                                }
-                            }
-                        }
+                        extracted(definitions, ptype, prop, obj, arrs);
+                        // //获取到对象类名
+                        // for (var j in definitions) {
+                        //     if (ptype == j) {
+                        //         var tpp = definitions[ptype];
+                        //         var pp_props = tpp["properties"];
+                        //         for (var prop1 in pp_props) {
+                        //             if (prop1 != prop) {
+                        //                 deepTree(obj.id, prop1, pp_props, definitions, arrs);
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                 }
 
