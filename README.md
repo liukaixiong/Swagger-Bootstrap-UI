@@ -14,7 +14,7 @@ swagger-bootstrap-ui
 
 注解使用
 
-![注解配置图](https://upload-images.jianshu.io/upload_images/6370985-c2d0f052a21103dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![注解配置图](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy82MzcwOTg1LWMyZDBmMDUyYTIxMTAzZGMucG5n)
 
 1. 入参
 
