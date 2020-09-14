@@ -8,6 +8,7 @@ swagger-bootstrap-ui
 
 基于swagger-bootstrap-ui做了一些优化拓展，原地址是在 [swagger-bootstrap-ui](https://github.com/xiaoymin/Swagger-Bootstrap-UI) 访问,一些特性功能可以在原地址上进行参考.本项目没有打包到mavne私服中,**需要自己本地编译。**
 
+如果图片看不到可以参考: https://blog.csdn.net/lkx444368875/article/details/80407893
 
 
 ## 功能展示
